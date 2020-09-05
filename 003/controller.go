@@ -3,11 +3,16 @@ package main
 import (
 	"fmt"
 
+	_ "github.com/joho/godotenv/autoload"
+
 	"github.com/hajimehoshi/ebiten"
 	"github.com/hajimehoshi/ebiten/ebitenutil"
+
+	"github.com/oneleo/go-game-practice/env"
 )
 
-var line int = 16
+// var line int = 16
+var line int = env.GetEnvAsInt("LINE", 8)
 
 func update(screen *ebiten.Image) error {
 	// 顯示一串除錯用的文字
