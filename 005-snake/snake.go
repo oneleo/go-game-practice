@@ -9,24 +9,39 @@ import (
 
 //Snake 00:14:10
 type Game struct {
+	blocks []*Block
 }
 
-var blocks []*ebiten.Image
-
-func init() {
-	blocks = initBlockImage()
+type Block struct {
+	img *ebiten.Image
+	x   float64
+	y   float64
 }
 
-func initBlockImage() []*ebiten.Image {
-	var images []*ebiten.Image
-	for i := 0; i < 20; {
-		img, _ := ebiten.NewImage(1, 10, ebiten.FilterDefault)
+func initBlocks() ([]*Block, error) {
+	var blocks []*Block
+	for i := 0; i < 20; i++ {
+		img, err := ebiten.NewImage(1, 10, ebiten.FilterDefault)
+		if err != nil {
+			return nil, err
+		}
 		img.Fill(color.White)
-		images = append(images, img)
+		blocks = append(blocks, &Block{
+			img: img,
+			x:   float64(i),
+			y:   0,
+		})
 	}
-	return images
+	return blocks, nil
 }
-
+func (g *Game) Init() error {
+	blocks, err := initBlocks()
+	if err != nil {
+		return err
+	}
+	g.blocks = blocks
+	return nil
+}
 func (g *Game) Update(screen *ebiten.Image) error {
 	return nil
 
@@ -34,7 +49,14 @@ func (g *Game) Update(screen *ebiten.Image) error {
 
 func (g *Game) Draw(screen *ebiten.Image) {
 	//screen.Fill(color.White)
-
+	for _, block := range g.blocks {
+		geom := ebiten.GeoM{}
+		geom.Translate(block.x, block.y)
+		options := ebiten.DrawImageOptions{
+			GeoM: geom,
+		}
+		screen.DrawImage(block.img, &options)
+	}
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
@@ -45,7 +67,12 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 func main() {
 	ebiten.SetWindowSize(320, 240)
 	ebiten.SetWindowTitle("Snake")
-	if err := ebiten.RunGame(&Game{}); err != nil {
+	game := &Game{}
+
+	if err := game.Init(); err != nil {
+		log.Fatalln(err)
+	}
+	if err := ebiten.RunGame(game); err != nil {
 		log.Fatal(err)
 	}
 }
