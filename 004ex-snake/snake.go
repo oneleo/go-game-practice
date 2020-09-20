@@ -7,15 +7,15 @@ import (
 	"github.com/hajimehoshi/ebiten"
 )
 
-//Snake 00:14:10
-type Game struct {
-	blocks []*Block
-}
-
+// Block 儲存
 type Block struct {
 	img *ebiten.Image
 	x   float64
 	y   float64
+}
+
+type Game struct {
+	blocks []*Block
 }
 
 func initBlocks() ([]*Block, error) {
@@ -42,9 +42,9 @@ func (g *Game) Init() error {
 	g.blocks = blocks
 	return nil
 }
+
 func (g *Game) Update(screen *ebiten.Image) error {
 	return nil
-
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
