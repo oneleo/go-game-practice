@@ -14,6 +14,15 @@ const (
 	dftWid = 10
 )
 
+type Direction int
+
+const (
+	Up Direction = iota
+	Right
+	Down
+	Left
+)
+
 // Block 儲存貪吃蛇（影像區塊）的參數
 type Block struct {
 	// 縮放（Scale）及縮放濾鏡（filter）
@@ -25,26 +34,35 @@ type Block struct {
 
 // Game 要實現 Update、Layout 函數，若有 Draw 函數則會根據參數將指定影像顯示至遊戲畫面上
 type Game struct {
-	blocks []*Block
+	blocks    []*Block
+	direction Direction
+}
+
+func newBlock(x, y float64) (*Block, error) {
+	// 縮放（Scale）及縮放濾鏡（filter）
+	img, err := ebiten.NewImage(1, 10, ebiten.FilterDefault)
+	if err != nil {
+		return nil, err
+	}
+	// 顏色白色
+	img.Fill(color.White)
+	return &Block{
+		img: img,
+		x:   x,
+		y:   y,
+	}, nil
 }
 
 // initBlocks 在遊戲開始前設置 i 個影像區塊
 func initBlocks() ([]*Block, error) {
 	var blocks []*Block
 	for i := 0; i < 20; i++ {
-		// 縮放（Scale）及縮放濾鏡（filter）
-		img, err := ebiten.NewImage(1, 10, ebiten.FilterDefault)
+		block, err := newBlock(float64(i), 0)
 		if err != nil {
 			return nil, err
 		}
-		// 顏色白色
-		img.Fill(color.White)
 		// 寫入
-		blocks = append(blocks, &Block{
-			img: img,
-			x:   float64(i),
-			y:   0,
-		})
+		blocks = append(blocks, block)
 	}
 	return blocks, nil
 }
@@ -56,11 +74,19 @@ func (g *Game) Init() error {
 		return err
 	}
 	g.blocks = blocks
+	g.direction = Right
 	return nil
 }
 
 // Update 在這邊用不到
 func (g *Game) Update(screen *ebiten.Image) error {
+
+	head := g.blocks[len(g.blocks)-1]
+	block, err := newBlock(head.x+1, head.y)
+	if err != nil {
+		return err
+	}
+	g.blocks = append(g.blocks, block)
 	return nil
 }
 
