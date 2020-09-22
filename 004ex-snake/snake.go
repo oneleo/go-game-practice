@@ -1,17 +1,21 @@
 package main
 
 import (
+	"fmt"
 	"image/color"
 	"log"
+	"reflect"
 
 	"github.com/hajimehoshi/ebiten"
 )
 
-// Block 儲存
+// Block 儲存貪吃蛇（圖片）的參數
 type Block struct {
+	// 縮放（Scale）及縮放濾鏡（filter）
 	img *ebiten.Image
-	x   float64
-	y   float64
+	// 位置（Position）
+	x float64
+	y float64
 }
 
 type Game struct {
@@ -40,6 +44,8 @@ func (g *Game) Init() error {
 		return err
 	}
 	g.blocks = blocks
+	MemAdr(g.blocks)
+	MemAdr(blocks)
 	return nil
 }
 
@@ -75,4 +81,8 @@ func main() {
 	if err := ebiten.RunGame(game); err != nil {
 		log.Fatal(err)
 	}
+}
+
+func MemAdr(p interface{}) {
+	fmt.Println(fmt.Sprintf("%v %p", reflect.TypeOf(p), &p))
 }
