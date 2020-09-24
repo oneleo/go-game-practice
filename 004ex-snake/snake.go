@@ -74,19 +74,27 @@ func (g *Game) Init() error {
 		return err
 	}
 	g.blocks = blocks
+	//g.direction = Up
 	g.direction = Right
 	return nil
 }
 
 // Update 在這邊用不到
 func (g *Game) Update(screen *ebiten.Image) error {
-
-	head := g.blocks[len(g.blocks)-1]
-	block, err := newBlock(head.x+1, head.y)
-	if err != nil {
-		return err
+	switch g.direction {
+	case Right:
+		head := g.blocks[len(g.blocks)-1]
+		if head.x < 319 {
+			block, err := newBlock(head.x+1, head.y)
+			if err != nil {
+				return err
+			}
+			// 增長
+			//g.blocks = append(g.blocks[], block)
+			// 移動
+			g.blocks = append(g.blocks[1:], block)
+		}
 	}
-	g.blocks = append(g.blocks, block)
 	return nil
 }
 
